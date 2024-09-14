@@ -108,17 +108,6 @@ const data = getFileData(filePathData, {
 let firstDayOfLessons = new Date(data.lessons.firstDayOfLessons);
 let lastDayOfLessons = new Date(data.lessons.lastDayOfLessons);
 
-// Initialize today's, week's, and month's values if missing
-if (!data.workedHours.byDay[dayKey]) data.workedHours.byDay[dayKey] = 0;
-if (!data.workedHours.byWeek[weekKey]) data.workedHours.byWeek[weekKey] = 0;
-if (!data.workedHours.byMonth[monthKey]) data.workedHours.byMonth[monthKey] = 0;
-if (!data.covers.byDay[dayKey]) data.covers.byDay[dayKey] = 0;
-if (!data.covers.byWeek[weekKey]) data.covers.byWeek[weekKey] = 0;
-if (!data.covers.byMonth[monthKey]) data.covers.byMonth[monthKey] = 0;
-if (!data.canceledLessons.byDay[dayKey]) data.canceledLessons.byDay[dayKey] = 0;
-if (!data.canceledLessons.byWeek[weekKey]) data.canceledLessons.byWeek[weekKey] = 0;
-if (!data.canceledLessons.byMonth[monthKey]) data.canceledLessons.byMonth[monthKey] = 0;
-
 const displayMode = (args.widgetParameter || widgetDisplayModes.TRACKING_STATUS).toUpperCase(); // Default to "TRACKING_STATUS"
 const shortCutParams = args.shortcutParameter;
 const statusFont = Font.boldSystemFont(16);
@@ -238,9 +227,9 @@ function updateCurrentStatus() {
                 statusSub = `${amount} ${translations.registeredFor} ${getDayKey(date)}`
                 icon = icons.covers;
                 iconColor = iconColors.covers;
-                data.covers.byDay[getDayKey(date)] += Number(amount);
-                data.covers.byWeek[getWeekKey(date)] += Number(amount);
-                data.covers.byMonth[getMonthKey(date)] += Number(amount);
+                data.covers.byDay[getDayKey(date)] = (data.covers.byDay[getDayKey(date)] || 0) + Number(amount);
+                data.covers.byWeek[getWeekKey(date)] = (data.covers.byWeek[getWeekKey(date)] || 0) + Number(amount);
+                data.covers.byMonth[getMonthKey(date)] = (data.covers.byMonth[getMonthKey(date)] || 0) + Number(amount);
                 break;
 
             case commands.CANCELED_LESSONS:
@@ -250,9 +239,9 @@ function updateCurrentStatus() {
                 statusSub = `${amount} ${translations.registeredFor} ${getDayKey(date)}`
                 icon = icons.canceledLessons;
                 iconColor = iconColors.canceledLessons;
-                data.canceledLessons.byDay[getDayKey(date)] += Number(amount);
-                data.canceledLessons.byWeek[getWeekKey(date)] += Number(amount);
-                data.canceledLessons.byMonth[getMonthKey(date)] += Number(amount);
+                data.canceledLessons.byDay[getDayKey(date)] = (data.canceledLessons.byDay[getDayKey(date)] || 0) + Number(amount);
+                data.canceledLessons.byWeek[getWeekKey(date)] = (data.canceledLessons.byWeek[getWeekKey(date)] || 0) + Number(amount);
+                data.canceledLessons.byMonth[getMonthKey(date)] = (data.canceledLessons.byMonth[getMonthKey(date)] || 0) + Number(amount);
                 break;
         }
         saveFileData(filePathData, data);
@@ -324,9 +313,9 @@ function createTrackingStatusWidgetUI() {
 
     const col2Header = addCustomText(column2, translations.workingHours, headerFont);
     column2.addSpacer(3); // Spacer between header and rows
-    const dailyValue = addCustomText(column2, formatHours(data.workedHours.byDay[dayKey]), infoFont);
-    const weeklyValue = addCustomText(column2, formatHours(data.workedHours.byWeek[weekKey]), infoFont);
-    const monthlyValue = addCustomText(column2, formatHours(data.workedHours.byMonth[monthKey]), infoFont);
+    const dailyValue = addCustomText(column2, formatHours(data.workedHours.byDay[dayKey] || 0), infoFont);
+    const weeklyValue = addCustomText(column2, formatHours(data.workedHours.byWeek[weekKey] || 0), infoFont);
+    const monthlyValue = addCustomText(column2, formatHours(data.workedHours.byMonth[monthKey] || 0), infoFont);
     columns.addSpacer(); // Spacer between columns
 
     // Third Column: Header for lessons
@@ -337,7 +326,7 @@ function createTrackingStatusWidgetUI() {
     const col3Header = addCustomText(column3, translations.lessonsAbbreviation, headerFont);
     column3.addSpacer(3); // Spacer between header and rows
 
-    const actualLessonsToday = getDifferenceOrZero(getLessonsOfToday(), data.canceledLessons.byDay[dayKey]);
+    const actualLessonsToday = getDifferenceOrZero(getLessonsOfToday(), data.canceledLessons.byDay[dayKey] || 0);
     const dailyLessonsValueText = addCustomText(column3, `${actualLessonsToday}x`, infoFont);
     const actualLessonsWeek = getActualLessonsCountInWeek(weekKey);
     const weeklyLessonsValueText = addCustomText(column3, `${actualLessonsWeek}x`, infoFont);
@@ -352,9 +341,9 @@ function createTrackingStatusWidgetUI() {
 
     const col4Header = addCustomText(column4, translations.coversAbbreviation, headerFont);
     column4.addSpacer(3); // Spacer between header and rows
-    const dailyCoversValue = addCustomText(column4, `${data.covers.byDay[dayKey]}x`, infoFont);
-    const weeklyCoversValue = addCustomText(column4, `${data.covers.byWeek[weekKey]}x`, infoFont);
-    const monthlyCoversValue = addCustomText(column4, `${data.covers.byMonth[monthKey]}x`, infoFont);
+    const dailyCoversValue = addCustomText(column4, `${data.covers.byDay[dayKey] || 0}x`, infoFont);
+    const weeklyCoversValue = addCustomText(column4, `${data.covers.byWeek[weekKey] || 0}x`, infoFont);
+    const monthlyCoversValue = addCustomText(column4, `${data.covers.byMonth[monthKey] || 0}x`, infoFont);
 
     return widget;
 }
@@ -449,13 +438,13 @@ function getWidgetColorConfig() {
 function getActualLessonsCountInWeek(localWeekKey) {
     const weekdaysCountInWeek = countWeekdaysInWeek(Number(localWeekKey.split('.')[0]), Number(localWeekKey.split('.')[1]));
     const lessonsCountInWeek = calculateWeekdayProductSum(data.lessons.schedule, weekdaysCountInWeek);
-    return getDifferenceOrZero(lessonsCountInWeek, data.canceledLessons.byWeek[localWeekKey]);
+    return getDifferenceOrZero(lessonsCountInWeek, data.canceledLessons.byWeek[localWeekKey] || 0);
 }
 
 function getActualLessonsCountInMonth(localMonthKey) {
     const weekdaysCountInMonth = countWeekdaysInMonth(Number(localMonthKey.split('.')[0]), Number(localMonthKey.split('.')[1]));
     const lessonsCountInMonth = calculateWeekdayProductSum(data.lessons.schedule, weekdaysCountInMonth);
-    return getDifferenceOrZero(lessonsCountInMonth, data.canceledLessons.byMonth[localMonthKey]);
+    return getDifferenceOrZero(lessonsCountInMonth, data.canceledLessons.byMonth[localMonthKey] || 0);
 }
 
 function getDifferenceOrZero(val1, val2) {
