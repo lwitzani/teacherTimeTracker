@@ -57,7 +57,7 @@ const widgetDisplayModes = {
     MONTHS_HISTORY: 'MONTHS_HISTORY',
 };
 
-// Commands that will be provided by the Shortcut
+// Commands that will be provided by the Shortcut-app
 const commands = {
     START: 'START',
     STOP: 'STOP',
@@ -119,7 +119,7 @@ let iconColor = iconColors.inactive;
 function updateCurrentStatus() {
     if (shortCutParams) {
         const [command, commandData] = shortCutParams.split(';');
-        let amount, dateString, date, workedHours, category;
+        let amount, dateString, date, category;
         switch (command) {
             case commands.START:
                 status = translations.trackingStarted;
