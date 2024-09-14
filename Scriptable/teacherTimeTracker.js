@@ -1,14 +1,20 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-purple; icon-glyph: magic;
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: teal; icon-glyph: magic;
+// This script was downloaded using ScriptDude.
+// Do not remove these lines, if you want to benefit from automatic updates.
+// source: https://raw.githubusercontent.com/lwitzani/teacherTimeTracker/main/Scriptable/teacherTimeTracker.js; docs: ; hash: 1376057764;
+
 const displayLessonsAs = 'COUNT'; // options are 'COUNT' and 'HOURS'
 const displayCoversAs = 'COUNT'; // options are 'COUNT' and 'HOURS'
 const lessonRealHours = 0.75; // in germany one school lesson is 45min
-const widgetBackgroundColor = new Color("#1A1A1A");
+const backgroundColorForDark = new Color("#1A1A1A");
+const backgroundColorForLight = new Color("#FFFFFF");
+const textColorForDark = new Color("#FFFFFF");
+const textColorForLight = new Color("#1A1A1A");
 const dataFileName = "TeacherTimeTrackerData.json";
+
+const widgetColorConfig = getWidgetColorConfig();
 
 // Translations can be adapted for your language
 const translations = {
@@ -115,6 +121,7 @@ if (!data.canceledLessons.byMonth[monthKey]) data.canceledLessons.byMonth[monthK
 
 const displayMode = (args.widgetParameter || widgetDisplayModes.TRACKING_STATUS).toUpperCase(); // Default to "TRACKING_STATUS"
 const shortCutParams = args.shortcutParameter;
+const statusFont = Font.boldSystemFont(16);
 const headerFont = Font.boldSystemFont(15);
 const infoFont = Font.systemFont(14);
 const amountOfMonthsShownInHistory = 3;
@@ -178,7 +185,13 @@ function updateCurrentStatus() {
                     return;
                 }
                 data.lessons = {
-                    schedule: {monday: mon, tuesday: tue, wednesday: wed, thursday: thu, friday: fri},
+                    schedule: {
+                        monday: Number(mon),
+                        tuesday: Number(tue),
+                        wednesday: Number(wed),
+                        thursday: Number(thu),
+                        friday: Number(fri)
+                    },
                     firstDayOfLessons: new Date(firstDayOfLessonsString),
                     lastDayOfLessons: new Date(lastDayOfLessonsString),
                 };
@@ -255,7 +268,6 @@ function updateCurrentStatus() {
 
 function createTrackingStatusWidgetUI() {
     const widget = new ListWidget();
-    widget.backgroundColor = widgetBackgroundColor;
 
     // Display the UI
     const topStack = widget.addStack();
@@ -274,14 +286,14 @@ function createTrackingStatusWidgetUI() {
     const iconImage = statusImageStack.addImage(icon.image);
     iconImage.imageSize = new Size(30, 30);
     iconImage.tintColor = iconColor;
-    statusImageStack.addText('');
+    const placeHolder = addCustomText(statusImageStack, '', infoFont);
 
     statusStack.addSpacer(10);
 
     const statusTextStack = statusStack.addStack();
     statusTextStack.addSpacer(statusSub ? 0 : 5);
     statusTextStack.layoutVertically();
-    const trackingText = addCustomText(statusTextStack, status, Font.boldSystemFont(16));
+    const trackingText = addCustomText(statusTextStack, status, statusFont);
     if (statusSub) {
         content.addSpacer(3);
         const startedAtValue = addCustomText(statusTextStack, statusSub, infoFont);
@@ -400,13 +412,10 @@ function createHistoryWidgetUI(dataType, periodType, amountShown) {
     const categoryHeader = addCustomText(categoryStack, translations.category, headerFont);
     categoryStack.addSpacer(3);
     Object.keys(data.categories).forEach(category => {
-        const categoryText = categoryStack.addText(category);
-        categoryText.font = infoFont;
-        categoryText.minimumScaleFactor = 0.5;
-        categoryText.lineLimit = 1;
+        const categoryText = addCustomText(categoryStack, category, infoFont);
         categoryStack.addSpacer(3);
     });
-ˆ
+
     const lessonsText = addCustomText(categoryStack, translations.lessons, infoFont);
     categoryStack.addSpacer(3);
     const coversText = addCustomText(categoryStack, translations.coversAbbreviation, infoFont);
@@ -423,6 +432,20 @@ function createHistoryWidgetUI(dataType, periodType, amountShown) {
 }
 
 // Utility Functions
+function getWidgetColorConfig() {
+    if (Device.isUsingDarkAppearance()) {
+        return {
+            widgetBackground: backgroundColorForDark,
+            widgetText: textColorForDark
+        };
+    } else {
+        return {
+            widgetBackground: backgroundColorForLight,
+            widgetText: textColorForLight
+        };
+    }
+}
+
 function getActualLessonsCountInWeek(localWeekKey) {
     const weekdaysCountInWeek = countWeekdaysInWeek(Number(localWeekKey.split('.')[0]), Number(localWeekKey.split('.')[1]));
     const lessonsCountInWeek = calculateWeekdayProductSum(data.lessons.schedule, weekdaysCountInWeek);
@@ -489,10 +512,22 @@ function getDayKey(date) {
 }
 
 function getWeekKey(date) {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-    const week = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-    return `${week}.${date.getFullYear()}`; // Format week as week.year
+    // Create a copy of the date object so the original is not modified
+    const target = new Date(date.valueOf());
+
+    // Set the target to the nearest Thursday (ISO 8601 week starts on Monday)
+    const dayNumber = (date.getDay() + 6) % 7; // Adjust so Monday is 0, Sunday is 6
+    target.setDate(target.getDate() - dayNumber + 3);
+
+    // Get the first Thursday of the year
+    const firstThursday = new Date(target.getFullYear(), 0, 4);
+    const dayOfYear = Math.floor((target - firstThursday) / 86400000); // Days since first Thursday
+
+    // Calculate the week number
+    const week = Math.floor(dayOfYear / 7) + 1;
+
+    // Return the formatted week.year string
+    return `${week}.${target.getFullYear()}`;
 }
 
 function getMonthKey(date) {
@@ -593,6 +628,7 @@ function addCustomText(stack, textContent, font, minScaleFactor = 0.5, lineLimit
     textElement.font = font;
     textElement.minimumScaleFactor = minScaleFactor;
     textElement.lineLimit = lineLimit;
+    textElement.textColor = widgetColorConfig.widgetText;
     return textElement;
 }
 
@@ -608,6 +644,7 @@ if (displayMode === widgetDisplayModes.TRACKING_STATUS) {
 } else if (displayMode === widgetDisplayModes.MONTHS_HISTORY) {
     widget = createHistoryWidgetUI("byMonth", "MONTH", amountOfMonthsShownInHistory);
 }
+widget.backgroundColor = widgetColorConfig.widgetBackground;
 
 if (config.runsInWidget) {
     Script.setWidget(widget);
