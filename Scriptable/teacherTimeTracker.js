@@ -1,10 +1,6 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
-// icon-color: deep-purple; icon-glyph: magic;
-// This script was downloaded using ScriptDude.
-// Do not remove these lines, if you want to benefit from automatic updates.
-// source: https://raw.githubusercontent.com/lwitzani/teacherTimeTracker/main/Scriptable/teacherTimeTracker.js; docs: ; hash: 1376057764;
-
+// icon-color: deep-purple; icon-glyph: brain;
 const displayLessonsAs = 'COUNT'; // options are 'COUNT' and 'HOURS'
 const displayCoversAs = 'COUNT'; // options are 'COUNT' and 'HOURS'
 const lessonRealHours = 0.75; // in germany one school lesson is 45min
@@ -13,8 +9,6 @@ const backgroundColorForLight = new Color("#FFFFFF");
 const textColorForDark = new Color("#FFFFFF");
 const textColorForLight = new Color("#1A1A1A");
 const dataFileName = "TeacherTimeTrackerData.json";
-
-const widgetColorConfig = getWidgetColorConfig();
 
 // Translations can be adapted for your language
 const translations = {
@@ -108,6 +102,7 @@ const data = getFileData(filePathData, {
 let firstDayOfLessons = new Date(data.lessons.firstDayOfLessons);
 let lastDayOfLessons = new Date(data.lessons.lastDayOfLessons);
 
+const widgetColorConfig = getWidgetColorConfig();
 const displayMode = (args.widgetParameter || widgetDisplayModes.TRACKING_STATUS).toUpperCase(); // Default to "TRACKING_STATUS"
 const shortCutParams = args.shortcutParameter;
 const statusFont = Font.boldSystemFont(16);
@@ -115,6 +110,7 @@ const headerFont = Font.boldSystemFont(15);
 const infoFont = Font.systemFont(14);
 const amountOfMonthsShownInHistory = 3;
 const amountOfWeeksShownInHistory = 3;
+const workWeekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']; // do not change
 let status = translations.trackingInactive;
 let statusSub = null;
 let icon = icons.inactive;
@@ -257,8 +253,6 @@ function updateCurrentStatus() {
 
 function createTrackingStatusWidgetUI() {
     const widget = new ListWidget();
-
-    // Display the UI
     const topStack = widget.addStack();
     topStack.layoutHorizontally();
     topStack.addSpacer();
@@ -583,7 +577,7 @@ function countWeekdaysInWeek(weekOfYear, year) {
     // Calculate the number of weekdays within the adjusted range
     for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
         if (date.getDay() >= 1 && date.getDay() <= 5) { // Monday to Friday are 1-5
-            let dayOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday"][date.getDay() - 1];
+            let dayOfWeek = workWeekdays[date.getDay() - 1];
             weekdayCounts[dayOfWeek]++;
         }
     }
@@ -591,11 +585,8 @@ function countWeekdaysInWeek(weekOfYear, year) {
 }
 
 function calculateWeekdayProductSum(obj1, obj2) {
-    const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
     let totalSum = 0;
-
-    // Iterate over each weekday
-    weekdays.forEach(day => {
+    workWeekdays.forEach(day => {
         const product = (obj1[day] || 0) * (obj2[day] || 0); // Calculate the product for each day
         totalSum += product; // Add the product to the total sum
     });
@@ -603,13 +594,16 @@ function calculateWeekdayProductSum(obj1, obj2) {
     return totalSum;
 }
 
-function getLessonsOfToday(lessonsSchedule) {
+function getLessonsOfToday() {
     if (!data.lessons.schedule) return 0;
-    const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     const todayIndex = today.getDay(); // 0 is Sunday, 1 is Monday, etc.
-    const currentDay = daysOfWeek[todayIndex];
-    // Return the lesson count for the current day
-    return data.lessons.schedule[currentDay] || 0; // If day is not in lessons, return 0 by default
+    // Check if today is a weekday (Monday to Friday)
+    if (todayIndex >= 1 && todayIndex <= 5) {
+        const currentDay = workWeekdays[todayIndex - 1]; // Adjust index for weekdays array
+        return data.lessons.schedule[currentDay] || 0;
+    }
+    // If today is Saturday or Sunday, return 0
+    return 0;
 }
 
 function addCustomText(stack, textContent, font, minScaleFactor = 0.5, lineLimit = 1) {
