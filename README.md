@@ -1,129 +1,112 @@
 # TeacherTimeTracker
-This repository contains a script for the iOS app "Scriptable" and several shortcut-files that work with the iOS app "Shortcuts".
-Together, these files create a functional way of tracking worked hours. 
-The script is meant for teachers to see their total hours worked.
 
-# Disclaimer
-- this script was created for one person that came to me asking for "something to track the time she is working for her teacher job" ... "existing apps cost something or are not really what she needs"
-- features have not yet been tested over a larger period of time
+This repository contains a time-tracking script designed for teachers, specifically for use with the iOS apps "Scriptable" and "Shortcuts." It provides an easy way for teachers to track their worked hours, manage lessons, and monitor covers or canceled classes.
 
-# Features
-- track worked hours
-  - a category is chosen for each tracked duration
-  - default categories: Correction, Preparation, Others
-  - can be done via "start at point of time A and stop at point of time B" mechanism
-  - can be done via "enter timespan" mechanism
-- track covers (cover = when a teacher takes over a lesson from another teacher)
-- track canceled lessons (when a teacher's lesson did not take place)
-- see the amount of lessons you held
-  - for this it is needed to enter the amount of own lessons (basically your schedule) for each weekday and the start and end date where lessons happen
-  - held lessons are then calculated for each week/month
-  - to have a somehow correct value here, you need to enter "canceled lessons" manually (e.g. on a national holiday)
-- see a sum of worked hours based on a week or month view
-  - worked hours are based on the worked hours in the different categories, the done covers, the done lessons, and the own cancelled lessons
+## Disclaimer
+- This script was created for a specific teacher who needed a customized time-tracking tool, as existing apps were either paid or didn’t meet her requirements.
+- Features have not been tested extensively over time.
 
-![](assets/views.jpg)
+## Features
+- **Track worked hours**
+  - Choose a category for each tracked session (default categories: Correction, Preparation, Others).
+  - Track time by starting and stopping the clock or manually entering a timespan.
+- **Track covers**
+  - Log covers when taking over lessons for another teacher.
+- **Track canceled lessons**
+  - Register lessons that were canceled (e.g., due to holidays).
+- **View lesson statistics**
+  - Enter your weekly schedule to track lessons held.
+  - Calculations are made weekly or monthly, accounting for manually inputted canceled lessons.
+- **View total worked hours**
+  - Summary of hours based on categories, covers, lessons held, and canceled lessons, viewable by week or month.
 
-# General description of setup
-- the functionality is achieved using two iOS apps: Scriptable and Shortcuts
-- Shortcuts are used to get user input
-  - currently, 7 shortcuts exist and are needed to be installed
-- Shortcuts will provide parameter to the Scriptable script
-- the Scriptable script reacts on the parameter coming from Shortcuts and handles the saving and displaying of the information
-- the Scriptable script can be set up as widgets on the homescreen of iOS
+![Widget Views](assets/views.jpg)
 
+## Setup Overview
+- The system uses two iOS apps: **Scriptable** and **Shortcuts**.
+- Shortcuts gather user input, and Scriptable processes the data.
+- There are seven essential Shortcuts required for full functionality.
+- Scriptable integrates with widgets on the iOS home screen.
 
-# Before the set up
-- have Scriptable downloaded on your iOS device
-- have Apple's Shortcut app on you iOS device
-- iCloud is used in this setup so without you will get errors
+## Prerequisites
+- Install **Scriptable** on your iOS device.
+- Install **Shortcuts** (Apple’s default app).
+- Enable iCloud, as it's used for saving data. Without iCloud, the script will throw errors.
 
-# How to get the files
-- choose your preferred language (english or german) and get the installer Shortcut in your Shortcuts app by clicking one of the links below
-  - english: https://www.icloud.com/shortcuts/190a38b1493f484cbf4437cc2d54c09f
-  - german: https://www.icloud.com/shortcuts/1d02cd443ad9447ab599615db447e923
-- execute the installer Shortcut (this will just download the files and put them into the right iCloud folder)
-  - the Scriptable script is now already ready
-  - the Shortcut files are in the right folder but are not visible in the Shortcut app yet
-- find your "Files" app on iOS and go to /iCloud Drive/Shortcuts
-  - here on top you should see 7 new shortcuts
-- click on each of those 7 files once, and you will be asked to add them to your Shortcuts app
-  - click "Add Shortcut" for each of them (now they will be visible inside the app)
+## Installation Steps
 
-![](assets/shortcutSetup.jpg)
+### Step 1: Get the Files
+- Choose your preferred language (English or German) and download the installer Shortcut:
+  - [English Version](https://www.icloud.com/shortcuts/190a38b1493f484cbf4437cc2d54c09f)
+  - [German Version](https://www.icloud.com/shortcuts/1d02cd443ad9447ab599615db447e923)
+- Run the installer Shortcut. This will automatically:
+  - Download the necessary files.
+  - Place them in the correct iCloud folder.
+  - Prepare the Scriptable script.
+- The Shortcut files will be stored in your iCloud, but you must activate them manually.
 
-# How to set up the widget
-- e.g. on your device's homescreen, add a new widget and choose the type "Scriptable"
-- add the medium variant
-- configure the widget to show the script and for the action select "run script"
-- 3 different views can be set up by providing widget parameters in this view
-  - leave it blank for the TRACKING_STATUS view
-  - enter WEEKS_HISTORY to get the view on statistics based on weeks
-  - enter MONTHS_HISTORY to get the view on statistics based on months
+### Step 2: Activate Shortcuts
+- Open the **Files** app on your iOS device and navigate to `/iCloud Drive/Shortcuts`.
+- You should see seven new Shortcut files here.
+- Open each file once, and select **Add Shortcut** for each one to add them to your Shortcuts app.
 
-![](assets/widgetSetup.jpg)
+![Shortcut Setup](assets/shortcutSetup.jpg)
 
-# Using the main Shortcut
-- you basically only need one of the added Shortcuts, the one named TeacherTimeTracker
-- this one will give you the list of possible functions and internally just references all the other added Shortcuts
-- you can export the main Shortcut to for example your homescreen then it looks like an own app and it doesn't open the Shortcuts app when executing
-![](assets/shortcuts.jpg)
+## Setting Up the Widget
+- On your iOS home screen, add a new widget.
+- Choose the **Scriptable** widget type, selecting the medium size.
+- Configure it to run the TeacherTimeTracker script. You can choose between three different views by entering the following widget parameters:
+  - Leave blank for **TRACKING_STATUS** view.
+  - Enter `WEEKS_HISTORY` for weekly statistics.
+  - Enter `MONTHS_HISTORY` for monthly statistics.
 
-# Please note
-- when you run the shortcuts the first time you will be asked to "allow" different things like accessing Scriptable scripts out of Shortcuts
-- just hit "allow" or "ok" for whatever pops up
+![Widget Setup](assets/widgetSetup.jpg)
 
-# Shortcut explanations
-- Configure school lessons
-  - this shortcut should be executed once directly after setting everything up
-  - you will be asked to input
-    - the amount of lessons you usually hold on each weekday
-    - the first & last day of lessons in the current school year
-  - this information will be used to calculate how many lessons you held
-- Register canceled lessons
-  - everytime you did not hold your any of your lesson, you should use this shortcut to register this
-  - also, when you had a national holiday on which you did not hold your lessons, you should enter those with this shortcut
-  - you will be asked to input
-    - an amount of lessons that were canceled
-    - a date on which the lessons were cancelled
-- Register covers
-  - everytime you cover a lesson for another teacher you should use this shortcut to register this
-  - you will be asked to input
-    - an amount of lessons that you covered
-    - a date on which you covered the lessons
-- Track time manually
-  - use this if you want to track worked hours in the past
-  - you will be asked to input
-    - the worked hours you want to track
-    - the date on which you worked those hours
-    - the category that those hours should be mapped to
-- Start time tracking
-  - use this shortcut before you start working to start the timer
-- Stop time tracking
-  - use this shortcut after you worked (when you obviously started the timer with the previous shortcut first)
-  - you will be asked to input the category that the worked hours should be mapped to
-  - there is an option to discard the tracked time, then only the timer is stopped
+## Using the TeacherTimeTracker Shortcut
+- You mainly need the Shortcut named **TeacherTimeTracker**.
+- This provides a menu of available functions, linking to the other Shortcuts.
+- You can add this main Shortcut to your home screen for quicker access. This allows you to run it without opening the Shortcuts app.
 
-# Customizations
-- you can add new categories in the shortcuts
-  - the Scriptable script can handle new categories out of the box
-  - if you want to remove a category again, you need to delete it from the json file
-- most of the variables at the top of the Scriptable script can be adapted by you
-- you can add your own language by editing the translation object in the Scriptable script and switching out the according texts in all the Shortcuts
-- you can change variables to show lessons and covers as hours instead of an amount
-  - use variables displayLessonsAs and displayCoversAs with values 'COUNT' or 'HOURS' for that
-- you can set your own widget color and text color if you want
-- if lessons in your country do not last 45min then adapt the variable lessonRealHours
+![Main Shortcuts](assets/shortcuts.jpg)
 
-# How to fix wrong trackings or a broken state
-- everything is saved in a json file called TeacherTimeTracker.json in /iCloud Drive/Scriptable folder
-  - you can always modify this file manually (if you know what you do) to correct things
-- if e.g. wrong covers were added, you can actually correct those cases via the given Shortcuts by using negative numbers
+## Notes on Permissions
+- The first time you run the shortcuts, you will be prompted to allow permissions for things like accessing Scriptable scripts from Shortcuts.
+- Simply hit **Allow** or **OK** for each prompt.
 
-# manual set up (without installer Shortcut)
-- of course if you know what you do you can also use the Scriptdu.de script together with the raw link and the name TeacherTimeTracker to install the script
-  - important: it really must be exactly the name "TeacherTimeTracker" because the Shortcuts will reference a script with this name
-![](assets/scriptdude.jpg)
-- for the shortcuts, you need to download them manually from this repository and open them once, one by one
+## Shortcut Descriptions
 
+- **Configure School Lessons**: Run this once after setup. You’ll input:
+  - Number of lessons you teach per weekday.
+  - First and last day of the school year.
+- **Register Canceled Lessons**: Log lessons that didn’t happen (e.g., holidays or canceled classes). Input:
+  - Number of lessons canceled.
+  - Date of cancellation.
+- **Register Covers**: Log lessons you covered for another teacher. Input:
+  - Number of lessons covered.
+  - Date of the cover.
+- **Track Time Manually**: Log hours worked in the past. Input:
+  - Number of hours.
+  - Date worked.
+  - Category of work (e.g., Correction, Preparation).
+- **Start Time Tracking**: Start the timer when you begin working.
+- **Stop Time Tracking**: Stop the timer. You’ll be asked to choose a category for the tracked time. There is an option to discard the recorded time.
 
+## Customizations
+- **Add New Categories**: Add new categories directly through Shortcuts. The Scriptable script will handle new categories without any changes.
+- **Remove Categories**: You can delete categories directly in the JSON file.
+- **Language Customization**: Edit the translation object in the Scriptable script and update the Shortcuts accordingly.
+- **Display Options**: You can choose to display lessons and covers in hours instead of counts. Change the `displayLessonsAs` and `displayCoversAs` variables to `HOURS` or `COUNT`.
+- **Widget Colors**: Set your preferred widget and text colors.
+- **Lesson Duration**: If lessons in your country last more or less than 45 minutes, update the `lessonRealHours` variable.
+
+## Fixing Incorrect Data or a Broken State
+- All data is saved in `TeacherTimeTracker.json` in the `/iCloud Drive/Scriptable` folder.
+  - You can manually modify this file if you understand its structure.
+- Use negative numbers in the Shortcuts to reverse any incorrectly logged entries (e.g., for covers).
+
+## Manual Setup (Without Installer Shortcut)
+- If you’re experienced with Scriptable, you can manually install the script using the [Scriptdu.de](https://scriptdu.de) platform:
+  - Import the script under the name `TeacherTimeTracker` (the name must be exact for Shortcuts to work).
+- You can download the individual Shortcut files from this repository and add them manually to the Shortcuts app.
+
+![Scriptdude Example](assets/scriptdude.jpg)
