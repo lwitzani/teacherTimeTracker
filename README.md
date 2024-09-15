@@ -105,6 +105,9 @@ The script is meant for teachers to see their total hours worked.
   - there is an option to discard the tracked time, then only the timer is stopped
 
 # Customizations
+- you can add new categories in the shortcuts
+  - the Scriptable script can handle new categories out of the box
+  - if you want to remove a category again, you need to delete it from the json file
 - most of the variables at the top of the Scriptable script can be adapted by you
 - you can add your own language by editing the translation object in the Scriptable script and switching out the according texts in all the Shortcuts
 - you can change variables to show lessons and covers as hours instead of an amount

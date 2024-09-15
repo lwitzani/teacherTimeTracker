@@ -139,7 +139,7 @@ function updateCurrentStatus() {
             case commands.MANUAL_TRACKING:
                 [workedHoursString, dateString, category] = commandData.split('_');
                 date = new Date(dateString);
-                const formatCheck = /^(\d+h)?(\d+m)?$/;
+                const formatCheck = /^-?(\d+h)?(\d+m)?$/;
                 if (!formatCheck.test(workedHoursString)) {
                     return; // do nothing if not valid
                 }
@@ -448,7 +448,10 @@ function getDifferenceOrZero(val1, val2) {
 function workedHoursStringToDecimal(workedHoursString) {
     let hours = 0;
     let minutes = 0;
+    // Check if the string starts with a minus
+    const isNegative = workedHoursString.startsWith('-');
 
+    // Match hours and minutes as before
     const hourMatch = workedHoursString.match(/(\d+)h/);
     if (hourMatch) {
         hours = parseInt(hourMatch[1]);
@@ -457,7 +460,9 @@ function workedHoursStringToDecimal(workedHoursString) {
     if (minuteMatch) {
         minutes = parseInt(minuteMatch[1]);
     }
-    return hours + minutes / 60;
+    // Convert to decimal and return as negative if needed
+    let result = hours + minutes / 60;
+    return isNegative ? -result : result;
 }
 
 function getFileData(path, defaultValue = {}) {
