@@ -370,10 +370,8 @@ function addHistoryColumn(stack, period, periodType, dataType) {
     const coversText = addCustomText(columnStack, shownCovers, infoFont);
     columnStack.addSpacer(3);
 
-    const canceledLessonsCount = (data.canceledLessons[dataType] && data.canceledLessons[dataType][period]) || 0;
-    const lessonsOverallCount = canceledLessonsCount >= lessonsCount ? 0 : lessonsCount - canceledLessonsCount;
     let sum = Object.keys(data.categories).reduce((acc, category) => acc + ((data.categories[category][dataType] && data.categories[category][dataType][period]) || 0), 0);
-    sum += lessonsOverallCount * lessonRealHours;
+    sum += lessonsCount * lessonRealHours;
     sum += coversCount * lessonRealHours;
     const sumText = addCustomText(columnStack, formatHours(sum), Font.systemFont(14));
     columnStack.addSpacer(3);
