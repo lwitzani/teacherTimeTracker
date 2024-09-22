@@ -87,7 +87,7 @@ const iconColors = {
 };
 
 // Fetch stored data or initialize if missing
-const data = getFileData(filePathData, {
+const data = await getFileData(filePathData, {
     currentStartTime: null,
     workedHours: {byDay: {}, byWeek: {}, byMonth: {}},
     covers: {byDay: {}, byWeek: {}, byMonth: {}},
@@ -99,8 +99,8 @@ const data = getFileData(filePathData, {
         lastDayOfLessons: "2025-07-31"
     }
 });
-let firstDayOfLessons = new Date(data.lessons.firstDayOfLessons);
-let lastDayOfLessons = new Date(data.lessons.lastDayOfLessons);
+let firstDayOfLessons = new Date(data?.lessons?.firstDayOfLessons);
+let lastDayOfLessons = new Date(data?.lessons?.lastDayOfLessons);
 
 const widgetColorConfig = getWidgetColorConfig();
 const displayMode = (args.widgetParameter || widgetDisplayModes.TRACKING_STATUS).toUpperCase(); // Default to "TRACKING_STATUS"
@@ -463,10 +463,12 @@ function workedHoursStringToDecimal(workedHoursString) {
     return isNegative ? -result : result;
 }
 
-function getFileData(path, defaultValue = {}) {
+async function getFileData(path, defaultValue = {}) {
     if (fm.fileExists(path)) {
+        await fm.downloadFileFromiCloud(path);
         try {
-            return JSON.parse(fm.readString(path));
+            const fileContent = await fm.readString(path);
+            return JSON.parse(fileContent);
         } catch (e) {
             console.error(`Error reading data from ${path}: ${e}`);
             Script.complete();

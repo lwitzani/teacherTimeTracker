@@ -114,3 +114,4 @@ This repository contains a time-tracking script designed for teachers, specifica
 ## Changelog
 if you installed the script before the mentioned dates below, then please update the script to the latest version (you can rerun the installer Shortcut and that's it):
 - 19.09.2024: fixed wrong calculation of worked hours sum (canceled lessons were subtracted twice)
+- 22.09.2024: trying to get rid of some nullpointer messages that probably existed due tue async file fetching
